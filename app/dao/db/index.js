@@ -1,6 +1,15 @@
 import Realm from 'realm';
 
-const SearchHistory = {};
+/**
+ * 仓库pulse表
+ */
+const RepositoryPulse = {
+    name: 'RepositoryPulse',
+    properties: {
+        fullName: 'string',
+        data: 'string',
+    }
+};
 
 /**
  * 本地已读历史表
@@ -174,6 +183,30 @@ const UserFollowed = {
 };
 
 /**
+ * 用户关注表
+ */
+const OrgMember = {
+    name: 'OrgMember',
+    properties: {
+        org: 'string',
+        data: 'string',
+    }
+};
+
+
+/**
+ * 用户组织表
+ */
+const UserOrgs = {
+    name: 'UserOrgs',
+    properties: {
+        userName: 'string',
+        data: 'string',
+    }
+};
+
+
+/**
  * 用户收藏表
  */
 const UserStared = {
@@ -249,8 +282,14 @@ let realm = new Realm({
         RepositoryDetail, RepositoryDetailReadme, RepositoryEvent, RepositoryIssue,
         RepositoryBranch, RepositoryWatcher, RepositoryStar, RepositoryFork, RepositoryCommits,
         UserFollower, UserFollowed, UserStared, UserRepos, RepositoryCommitInfoDetail,
-        IssueDetail, IssueComment, ReadHistory
+        IssueDetail, IssueComment, ReadHistory, RepositoryPulse, OrgMember, UserOrgs
     ]
 });
+
+export const clearCache = () => {
+    realm.write(() => {
+        realm.deleteAll()
+    })
+};
 
 export default realm;

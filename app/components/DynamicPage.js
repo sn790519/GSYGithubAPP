@@ -18,6 +18,7 @@ import {getActionAndDes, ActionUtils} from '../utils/eventUtils'
 import EventItem from './widget/EventItem'
 import PullListView from './widget/PullLoadMoreListView'
 import * as Config from '../config'
+import {getNewsVersion} from './AboutPage'
 
 
 /**
@@ -39,8 +40,16 @@ class DynamicPage extends Component {
     componentDidMount() {
         InteractionManager.runAfterInteractions(() => {
             this.startRefresh();
+            getNewsVersion();
         });
         AppState.addEventListener('change', this._handleAppStateChange);
+
+        /*setTimeout(() => {
+            if (__DEV__) {
+                Actions.SettingPage()
+            }
+        }, 1000)*/
+
     }
 
     componentWillUnmount() {
@@ -70,7 +79,7 @@ class DynamicPage extends Component {
                 actionUser={rowData.actor.display_login}
                 actionUserPic={rowData.actor.avatar_url}
                 des={res.des}
-                onPressItem={()=>{
+                onPressItem={() => {
                     ActionUtils(rowData)
                 }}
                 actionTarget={res.actionStr}/>

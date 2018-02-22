@@ -36,8 +36,12 @@ class IssueItem extends Component {
         let {actionTime, actionUser, actionUserPic, issueComment, issueDes, issueDesHtml, closed_by} = this.props;
         let stateText = (closed_by) ?
             <View>
-                <Text style={[styles.subSmallText, {marginVertical: 5,}]}>{"Closed by " + closed_by.login}</Text>
+                <Text selectable={true}
+                      style={[styles.subSmallText, {marginVertical: 5,}]}>{"Closed by " + closed_by.login}</Text>
             </View> : <View/>;
+        if (issueDesHtml && issueDesHtml.indexOf("<br>") >= 0) {
+            issueDesHtml = issueDesHtml.replace(/<br>/g, '\n');
+        }
         return (
             <View
                 style={[{
@@ -46,7 +50,6 @@ class IssueItem extends Component {
                     marginRight: Constant.normalMarginEdge,
                     paddingHorizontal: Constant.normalMarginEdge,
                     paddingTop: Constant.normalMarginEdge,
-                    borderRadius: 4,
                 }, styles.shadowCard, {backgroundColor: Constant.primaryColor}]}
                 onPress={() => {
                     this.props.onPressItem && this.props.onPressItem();
@@ -99,7 +102,7 @@ class IssueItem extends Component {
                             style={[styles.flexDirectionRowNotFlex, {
                                 marginBottom: Constant.normalMarginEdge
                             }]}>
-                            <Text style={[styles.miLightSmallText,] } selectable={true}>{issueComment}</Text>
+                            <Text style={[styles.miLightSmallText,]} selectable={true}>{issueComment}</Text>
                         </View>
                     </View>
                 </View>
@@ -109,15 +112,13 @@ class IssueItem extends Component {
                             marginTop: Constant.normalMarginEdge / 2,
                             backgroundColor: Constant.transparentColor
                         }]}
-                        numberOfLines={100}
+                        selectable={true}
+                        numberOfLines={9999}
                         value={issueDesHtml ? issueDesHtml : ""}
                         stylesheet={{pre: styles.inCode, code: styles.pCode}}
                         textComponentProps={{
                             style: styles.miLightSmallText,
-                            numberOfLines: 100,
-                        }}
-                        customRenderer={() => {
-
+                            numberOfLines: 9999,
                         }}
                         textComponent={() => {
                             return (

@@ -159,6 +159,29 @@ const checkFollow = async (name, followed) => {
     }
 };
 
+
+/**
+ * 获取组织成员
+ */
+const getMember = async (page = 1, userName) => {
+    if (page <= 1) {
+        return UserDao.getMemberDao(userName, page, true);
+    } else {
+        return UserDao.getMemberDao(userName, page)
+    }
+};
+
+/**
+ * 获取用户组织
+ */
+const getUserOrgs = async (page = 1, userName) => {
+    if (page <= 1) {
+        return UserDao.getUserOrgsDao(userName, page, true);
+    } else {
+        return UserDao.getUserOrgsDao(userName, page)
+    }
+};
+
 export default {
     initUserInfo,
     getUserInfo,
@@ -171,5 +194,7 @@ export default {
     setAllNotificationAsRead,
     updateUser,
     doFollow,
-    checkFollow
+    checkFollow,
+    getMember,
+    getUserOrgs
 }

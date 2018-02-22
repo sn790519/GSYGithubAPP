@@ -61,19 +61,20 @@ class IssueItem extends Component {
                 marginTop: Constant.normalMarginEdge / 2,
                 backgroundColor: Constant.transparentColor
             }]}
-            numberOfLines={100}
+            numberOfLines={9999}
             value={issueCommentHtml}
             textComponentProps={{
                 style: styles.subSmallText,
-                numberOfLines: 100,
+                numberOfLines: 9999,
             }}
+            selectable={true}
             stylesheet={{pre: styles.inCode, code: styles.pCode}}
             textComponent={() => {
                 return (
                     <Text/>
                 )
             }}
-        /> : <Text style={[styles.subSmallText,]}>{issueComment}</Text>;
+        /> : <Text selectable={true} style={[styles.subSmallText,]}>{issueComment}</Text>;
 
 
         return (
@@ -84,7 +85,6 @@ class IssueItem extends Component {
                     marginRight: Constant.normalMarginEdge,
                     paddingHorizontal: Constant.normalMarginEdge,
                     paddingTop: Constant.normalMarginEdge,
-                    borderRadius: 4,
                 }, styles.shadowCard]}
                 onPress={() => {
                     this.props.onPressItem && this.props.onPressItem();
@@ -107,7 +107,7 @@ class IssueItem extends Component {
                         marginBottom: bottomMargin
                     }}>
                         <View style={[styles.flexDirectionRowNotFlex, styles.centerH]}>
-                            <Text style={[styles.flex, styles.normalText, {fontWeight: "bold",}]}>
+                            <Text selectable={true} style={[styles.flex, styles.normalText, {fontWeight: "bold",}]}>
                                 {actionUser}
                             </Text>
                             <TimeText style={[styles.subSmallText, {marginTop: -3}]}

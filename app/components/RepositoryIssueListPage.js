@@ -123,6 +123,7 @@ class RepositoryIssueListPage extends Component {
                 issueTag={"#" + rowData.number}
                 onPressItem={() => {
                     Actions.IssueDetail({
+                        needRightBtn: true,
                         issue: rowData, title: fullName,
                         repositoryName: this.props.repositoryName,
                         userName: this.props.userName
@@ -223,7 +224,7 @@ class RepositoryIssueListPage extends Component {
         }]
     }
 
-    _createIssue(title, text) {
+    _createIssue(text, title) {
         let {repositoryName, userName} = this.props;
         Actions.LoadingModal({backExit: false});
         issueActions.createIssue(userName, repositoryName,

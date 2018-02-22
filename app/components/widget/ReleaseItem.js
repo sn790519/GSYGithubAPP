@@ -10,13 +10,7 @@ import {
 import PropTypes from 'prop-types';
 import styles from '../../style'
 import * as Constant from '../../style/constant'
-import {Actions} from 'react-native-router-flux';
-import I18n from '../../style/i18n'
-import loginActions from '../../store/actions/login'
-import {connect} from 'react-redux'
-import {bindActionCreators} from 'redux'
 import TimeText from './TimeText'
-import UserImage from './UserImage'
 import HTMLView from '../common/CommonHtmlView';
 
 /**
@@ -42,6 +36,7 @@ class ReleaseItem extends Component {
                 marginTop: Constant.normalMarginEdge / 2,
                 backgroundColor: Constant.transparentColor
             }]}
+            selectable={true}
             numberOfLines={100}
             value={actionTarget}
             textComponentProps={{
@@ -64,6 +59,9 @@ class ReleaseItem extends Component {
                     padding: Constant.normalMarginEdge,
                     borderRadius: 4,
                 }, styles.shadowCard]}
+                onLongPress={()=>{
+                    this.props.onLongPressItem && this.props.onLongPressItem();
+                }}
                 onPress={() => {
                     this.props.onPressItem && this.props.onPressItem();
                 }}>
@@ -92,6 +90,7 @@ const propTypes = {
     actionMode: PropTypes.string,
     actionTarget: PropTypes.string,
     onPressItem: PropTypes.func,
+    onLongPressItem: PropTypes.func,
 };
 
 ReleaseItem.propTypes = propTypes;

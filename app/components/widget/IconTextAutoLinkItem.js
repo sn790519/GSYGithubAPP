@@ -3,7 +3,6 @@ import {
     View, Linking,Clipboard
 } from 'react-native';
 import PropTypes from 'prop-types';
-import {Actions} from 'react-native-router-flux';
 import styles from "../../style"
 import I18n from '../../style/i18n'
 import * as Constant from '../../style/constant'
@@ -45,7 +44,7 @@ class IconTextAutoLinkItem extends Component {
                         Clipboard.setString(link);
                         Toast(I18n("hadCopy"));
                     }}
-                    style={[{marginLeft: halfEdge},]}
+                    style={[{marginLeft: halfEdge}, styles.miLightSmallText]}
                     linkStyle={[
                         ...this.props.textstyle]}>
                 </Autolink>

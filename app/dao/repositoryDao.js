@@ -4,6 +4,7 @@ import GitHubTrending from '../utils/trending/GitHubTrending'
 import realm from './db'
 import {generateHtml} from "../utils/htmlUtils";
 import * as Config from '../config'
+import getPulse from "../utils/pulse/PulseUtils";
 
 /**
  * 趋势数据
@@ -55,6 +56,47 @@ const getTrendDao = async (page = 0, since, languageType) => {
 
 };
 
+
+/**
+ * Pulse
+ */
+const getPulseDao = async (owner, repositoryName) => {
+    let fullName = owner + "/" + repositoryName;
+    let nextStep = async () => {
+        let res = await getPulse(owner, repositoryName);
+        if (res && res.result && res.data) {
+            realm.write(() => {
+                let allData = realm.objects('RepositoryPulse').filtered(`fullName="${fullName}"`);
+                realm.delete(allData);
+                realm.create('RepositoryPulse', {
+                    fullName: fullName,
+                    data: JSON.stringify(res.data)
+                });
+
+            });
+        }
+        return {
+            data: res.data,
+            result: res.result
+        };
+    };
+    let allData = realm.objects('RepositoryPulse').filtered(`fullName="${fullName}"`);
+    if (allData && allData.length > 0) {
+        return {
+            data: JSON.parse(allData[0].data),
+            next: nextStep,
+            result: true
+        };
+    } else {
+        return {
+            data: [],
+            next: nextStep,
+            result: false
+        };
+    }
+
+};
+
 /**
  * 搜索仓库
  * @param q 搜索关键字
@@ -90,7 +132,7 @@ const searchRepositoryIssueDao = async (q, page) => {
 };
 
 /**
- * 用户收藏的
+ * 用户的仓库
  */
 const getUserRepositoryDao = async (userName, page, sort, localNeed) => {
     let sortText = sort ? sort : "pushed";
@@ -201,7 +243,7 @@ const getRepositoryDetailDao = (userName, reposName) => {
             try {
                 if (issueRes && issueRes.result && issueRes.data) {
                     netData.all_issues_count = parseInt(issueRes.data);
-                    netData.closed_issues_count =  netData.all_issues_count  - netData.open_issues_count;
+                    netData.closed_issues_count = netData.all_issues_count - netData.open_issues_count;
                 }
             } catch (e) {
                 console.log(e)
@@ -570,9 +612,9 @@ const doRepositoryWatchDao = async (userName, reposName, watch) => {
 /**
  * 获取仓库的release列表
  */
-const getRepositoryReleaseDao = async (userName, reposName, page) => {
+const getRepositoryReleaseDao = async (userName, reposName, page, needHtml = true) => {
     let url = Address.getReposRelease(userName, reposName) + Address.getPageParams("?", page);
-    let res = await await Api.netFetch(url, 'GET', null, false, {Accept: 'application/vnd.github.html,application/vnd.github.VERSION.raw'});
+    let res = await await Api.netFetch(url, 'GET', null, false, {Accept: (needHtml ? 'application/vnd.github.html,application/vnd.github.VERSION.raw' : "")});
     return {
         data: res.data,
         result: res.result
@@ -709,7 +751,7 @@ const getRepositoryDetailReadmeDao = async (userName, reposName, branch) => {
 /**
  * 搜索话题
  */
-const searchTopicRepositoryDao = async(searchTopic, page = 0) => {
+const searchTopicRepositoryDao = async (searchTopic, page = 0) => {
     let url = Address.searchTopic(searchTopic) + Address.getPageParams("&", page);
     let res = await await Api.netFetch(url);
     return {
@@ -723,7 +765,7 @@ const searchTopicRepositoryDao = async(searchTopic, page = 0) => {
  * 获取issue总数
  */
 const getRepositoryIssueStatusDao = async (userName, repository) => {
-    let url = Address.getReposIssue(userName, repository) +  "&per_page=1";
+    let url = Address.getReposIssue(userName, repository) + "&per_page=1";
     let res = await Api.netFetch(url, 'GET', null, false, {Accept: 'application/vnd.github.html,application/vnd.github.VERSION.raw'});
     if (res && res.result && res.headers && res.headers.map) {
         try {
@@ -753,11 +795,39 @@ const getRepositoryIssueStatusDao = async (userName, repository) => {
             result: false,
         }
     }
-
-
-
 };
 
+/**
+ * 用户的前100仓库
+ */
+const getUserRepository100StatusDao = async (userName) => {
+    let url = Address.userRepos(userName, 'pushed') + "&page=1&per_page=100";
+    let res = await await Api.netFetch(url);
+    if (res && res.result && res.data.length > 0) {
+        let stared = 0;
+        res.data.forEach((item) => {
+            stared += item.watchers_count
+        });
+
+        function sortNumber(a, b) {
+            return b.watchers_count - a.watchers_count
+        }
+
+        res.data.sort(sortNumber);
+        return {
+            data: {
+                list: res.data,
+                stared: stared,
+            },
+            result: true
+        };
+    } else {
+        return {
+            data: 0,
+            result: false
+        };
+    }
+};
 
 export default {
     getTrendDao,
@@ -784,5 +854,7 @@ export default {
     getRepositoryLocalReadDao,
     addRepositoryLocalReadDao,
     searchTopicRepositoryDao,
-    getRepositoryIssueStatusDao
+    getRepositoryIssueStatusDao,
+    getUserRepository100StatusDao,
+    getPulseDao
 }

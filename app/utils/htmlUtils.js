@@ -4,6 +4,7 @@ import * as Constant from '../style/constant'
 import {Platform} from 'react-native'
 import {Actions} from 'react-native-router-flux'
 import URL from 'url-parse';
+import {graphicHost} from "../net/address";
 
 /**
  * markdown to html parser
@@ -68,9 +69,19 @@ export const generateHtml = (mdData, backgroundColor = Constant.white, userBR = 
     if (!mdData) {
         return "";
     }
-    let data = mdData.replace(/<code(([\s\S])*?)<\/code>/gi, function (match, capture) {
+    let mdDataCode = mdData.replace(/<code(([\s\S])*?)<\/code>/gi, function (match, capture) {
         if (match) {
-            if (Platform.OS === 'android') {
+            if (match && match.indexOf("\n") !== -1) {
+                match = match.replace(/[\n]/g, '\n\r<br>');
+            }
+            return match;
+        } else {
+            return match;
+        }
+    });
+    mdDataCode = mdDataCode.replace(/<pre(([\s\S])*?)<\/pre>/gi, function (match, capture) {
+        if (match) {
+            if (match.indexOf("<code>") < 0) {
                 if (match && match.indexOf("\n") !== -1) {
                     match = match.replace(/[\n]/g, '\n\r<br>');
                 }
@@ -81,6 +92,33 @@ export const generateHtml = (mdData, backgroundColor = Constant.white, userBR = 
         }
     });
 
+    mdDataCode = mdDataCode.replace(/<pre>(([\s\S])*?)<\/pre>/gi, function (match, capture) {
+        if (match && capture) {
+            if (match.indexOf("<code>") < 0) {
+                let code = `<pre><code>${capture}</code></pre>`;
+                if (code.indexOf("\n") !== -1) {
+                    code = code.replace(/[\n]/g, '\n\r<br>');
+                }
+                return code
+            }
+            return match;
+        } else {
+            return match;
+        }
+    });
+
+    let data = mdDataCode.replace(/href="(.*?)"/gi, function (match, capture) {
+        if (match && capture) {
+            if (capture.indexOf("http://") < 0 && capture.indexOf("https://") < 0 && capture.indexOf("#") !== 0) {
+                let fixedUrl = "gsygithub://" + capture;
+                let href = `href="${fixedUrl}"`;
+                return href;
+            }
+            return match;
+        } else {
+            return match;
+        }
+    });
     return generateCodeHtml(data, false, backgroundColor, Constant.actionBlue, userBR);
 };
 
@@ -172,7 +210,7 @@ const generateCodeHtml = (mdHTML, wrap, backgroundColor = Constant.white, action
         "font-size: 12px;" +
         "direction:hor" +
         "}" +
-        ".highlight {overflow: scroll; background: " + Constant.subLightTextColor + "}" +
+        ".highlight {overflow: scroll; background: " + Constant.webDraculaBackgroundColor + "}" +
         "tr:nth-child(even) {" +
         "background:" + Constant.primaryLightColor + ";" +
         "color:" + Constant.miWhite + ";" +
@@ -361,7 +399,7 @@ export function launchUrl(url) {
     }
 }
 
-export const isImageEnd = (path)=> {
+export const isImageEnd = (path) => {
     let image = false;
     IMAGE_END.forEach((item) => {
         if (path.indexOf(item) + item.length === path.length) {
@@ -370,6 +408,27 @@ export const isImageEnd = (path)=> {
     });
     return image
 
-}
+};
 
 const IMAGE_END = [".png", ".jpg", ".jpeg", ".gif", ".svg"];
+
+
+export const generateImageHtml = (user, color) => {
+    let source = "<html>\n" +
+        "<head>\n" +
+        "<meta charset=\"utf-8\" />\n" +
+        "<title></title>\n" +
+        "<meta name=\"viewport\" content=\"width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;\"/>" +
+        "<style>" +
+        "body{background: " + "#FFFFFF" + ";}" +
+        "</style>" +
+        "</head>\n" +
+        "<body>\n" +
+        `<img src="${graphicHost}${color}/${user}" alt="${user}'s Blue Github Chart" />\n` +
+        "</body>\n" +
+        "</html>";
+
+    console.log(source)
+
+    return source
+};

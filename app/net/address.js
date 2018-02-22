@@ -7,6 +7,7 @@ import * as Config from '../config'
 let host = "https://api.github.com/";
 export const hostWeb = "https://github.com/";
 export const downloadUrl = 'https://www.pgyer.com/GSYGithubApp';
+export const graphicHost= 'https://ghchart.rshah.org/';
 
 export default AddressLocal = {
     /**
@@ -160,6 +161,13 @@ export default AddressLocal = {
         return `${host}repos/${reposOwner}/${reposName}/issues/${issueNumber}`
     },
     /**
+     * 锁定issue put
+     * 解锁issue delete
+     */
+    lockIssue: (reposOwner, reposName, issueNumber) => {
+        return `${host}repos/${reposOwner}/${reposName}/issues/${issueNumber}/lock`
+    },
+    /**
      * 创建issue post
      */
     createIssue: (reposOwner, reposName) => {
@@ -310,6 +318,18 @@ export default AddressLocal = {
      */
     getEvent: (userName) => {
         return `${host}users/${userName}/events`
+    },
+    /**
+     * 组织成员
+     */
+    getMember:(orgs)=>{
+        return `${host}orgs/${orgs}/members`;
+    },
+    /**
+     * 获取用户组织
+     */
+    getUserOrgs:(userName)=>{
+        return `${host}users/${userName}/orgs`;
     },
     /**
      * 通知 get

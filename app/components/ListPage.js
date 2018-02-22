@@ -4,7 +4,7 @@
 
 import React, {Component} from 'react';
 import {
-    View, Text, StatusBar, InteractionManager, TouchableOpacity, Keyboard
+    View, Linking, StatusBar, InteractionManager, TouchableOpacity, Keyboard
 } from 'react-native';
 import {Actions} from 'react-native-router-flux';
 import styles from "../style/index"
@@ -12,13 +12,10 @@ import * as Constant from "../style/constant"
 import userActions from '../store/actions/user'
 import repositoryActions from '../store/actions/repository'
 import I18n from '../style/i18n'
-import {connect} from 'react-redux'
-import {bindActionCreators} from 'redux'
 import UserItem from './widget/UserItem'
 import IssueItem from './widget/IssueItem'
 import EventItem from './widget/EventItem'
 import ReleaseItem from './widget/ReleaseItem'
-import CustomSearchButton from './widget/CustomSearchButton'
 import PullListView from './widget/PullLoadMoreListView'
 import RepositoryItem from './widget/RepositoryItem'
 import * as Config from '../config/index'
@@ -46,7 +43,8 @@ class ListPage extends Component {
 
     componentDidMount() {
         InteractionManager.runAfterInteractions(() => {
-            this.refs.pullList.showRefreshState();
+            if (this.refs.pullList)
+                this.refs.pullList.showRefreshState();
             this._refresh();
         })
     }
@@ -63,7 +61,8 @@ class ListPage extends Component {
     }
 
     _doRefresh() {
-        this.refs.pullList.showRefreshState();
+        if (this.refs.pullList)
+            this.refs.pullList.showRefreshState();
         this._refresh();
     }
 
@@ -90,6 +89,12 @@ class ListPage extends Component {
                     actionUser={rowData.login}
                     actionUserPic={rowData.avatar_url}
                     des={rowData.bio}/>);
+            case 'org':
+                return (<UserItem
+                    location={""}
+                    actionUser={rowData.login}
+                    actionUserPic={rowData.avatar_url}
+                    des={rowData.description}/>);
             case 'issue':
                 let fullName = getFullName(rowData.repository_url) + "--";
                 return (
@@ -122,10 +127,15 @@ class ListPage extends Component {
                                     title: rowData.name,
                                     needRequest: false,
                                     lang: 'markdown',
-                                    detail: generateHtml(rowData.body_html, Constant.primaryColor),
+                                    detail: generateHtml(rowData.body_html, Constant.webDraculaBackgroundColor),
                                     html_url: rowData.html_url,
                                     clone_url: rowData.clone_url,
                                 })
+                            }
+                        }}
+                        onLongPressItem={() => {
+                            if (rowData.html_url) {
+                                Linking.openURL(rowData.html_url)
                             }
                         }}
                     />
@@ -157,6 +167,7 @@ class ListPage extends Component {
                                     repositoryName: rowData.repository.name,
                                     userName: rowData.repository.owner.login,
                                     needRightBtn: true,
+                                    iconType:1,
                                     rightBtn: 'home',
                                     rightBtnPress: () => {
                                         Actions.RepositoryDetail({
@@ -287,6 +298,22 @@ class ListPage extends Component {
                     this._refreshRes(res)
                 });
                 break;
+            case 'user_be_stared':
+                this._refreshRes({result: true, data: this.props.localData});
+                break;
+            case 'user_orgs':
+                userActions.getUserOrgs(0, this.props.currentUser)
+                    .then((res) => {
+                        this.setState({
+                            dataSource: res.data
+                        });
+                        return res.next();
+                    })
+                    .then((res) => {
+                        this._refreshRes(res)
+                    });
+                break;
+
 
         }
 
@@ -355,6 +382,14 @@ class ListPage extends Component {
                 break;
             case 'topics':
                 repositoryActions.searchTopicRepository(this.props.topic, this.page).then((res) => {
+                    this._loadMoreRes(res)
+                });
+                break;
+            case 'user_be_stared':
+                this._loadMoreRes({result: false});
+                break;
+            case 'user_orgs':
+                userActions.getUserOrgs(this.page, this.props.currentUser).then((res) => {
                     this._loadMoreRes(res)
                 });
                 break;
@@ -429,7 +464,8 @@ ListPage.propTypes = {
     participating: PropTypes.bool,
     onItemClickEx: PropTypes.func,
     currentUser: PropTypes.string,
-    currentRepository: PropTypes.string
+    currentRepository: PropTypes.string,
+    localData: PropTypes.any
 };
 
 export default ListPage

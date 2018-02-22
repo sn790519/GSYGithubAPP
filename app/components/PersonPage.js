@@ -57,15 +57,24 @@ class PersonPage extends BasePersonPage {
             if (res && res.result) {
                 this.setState({
                     userInfo: res.data
-                })
+                });
+                if (res.data.type === "Organization") {
+                    Actions.refresh({titleData: res.data, showType: "Organization"});
+                } else {
+                    Actions.refresh({titleData: res.data, showType: "user"});
+                }
             }
-            Actions.refresh({titleData: res.data});
             return res.next();
         }).then((res) => {
             if (res && res.result) {
                 this.setState({
                     userInfo: res.data
-                })
+                });
+                if (res.data.type === "Organization") {
+                    Actions.refresh({titleData: res.data, showType: "Organization"});
+                } else {
+                    Actions.refresh({titleData: res.data, showType: "user"});
+                }
             }
         });
         userAction.checkFollow(this.props.currentUser).then((res) => {

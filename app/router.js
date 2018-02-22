@@ -28,7 +28,7 @@ import SearchPage from './components/SearchPage'
 import ListPage from './components/ListPage'
 import TabIcon from './components/widget/TabIcon'
 import TextInputModal from './components/common/CommonTextInputModal'
-import CommentConfirmModal from './components/widget/CommentConfirmModal'
+import CommentConfirmModal from './components/common/CommonConfirmModal'
 import LoadingModal from './components/common/LoadingModal'
 import CommonOptionModal from './components/common/CommonOptionModal'
 import DrawerFilter from './components/widget/SearchDrawerFilter'
@@ -49,7 +49,6 @@ import {screenWidth, drawerWidth} from "./style/index";
  * 全局路由
  */
 const getRouter = () => {
-    changeLocale();
     return (
         <Router
             getSceneStyle={() => {
@@ -141,6 +140,11 @@ const getRouter = () => {
                            renderLeftButton={() => <CustomBackButton/>}
                     />
                     <Scene key="IssueDetail" component={IssueDetail}
+                           rightBtn={'ios-more'}
+                           iconType={2}
+                           rightBtnPress={(params) => {
+                               return CommonMoreRightBtnPress(params)
+                           }}
                            renderRightButton={(params) => <CommonIconButton data={params}/>}
                            renderLeftButton={() => <CustomBackButton/>}
                     />

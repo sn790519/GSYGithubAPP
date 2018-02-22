@@ -3,6 +3,7 @@
  */
 
 import React, {Component} from 'react';
+import {InteractionManager} from 'react-native';
 import loginActions from '../store/actions/login'
 import userActions from '../store/actions/user'
 import {connect} from 'react-redux'
@@ -17,16 +18,25 @@ class MyPage extends BasePersonPage {
     constructor(props) {
         super(props);
         this.refreshUnRead = this.refreshUnRead.bind(this);
+        this.showType = 0;
     }
 
     componentDidMount() {
         super.componentDidMount();
-        this.refreshUnRead();
+        InteractionManager.runAfterInteractions(() => {
+            this.refreshUnRead();
+            this._getOrgsList();
+        });
     }
 
     _refresh() {
         super._refresh();
         this.refreshUnRead();
+        userActions.getUserInfo().then((res)=>{
+            if(__DEV__) {
+                console.log("***MyPage***", res)
+            }
+        })
     }
 
     getBackNotifyCall() {
@@ -38,7 +48,7 @@ class MyPage extends BasePersonPage {
             if (res && res.result && res.data && res.data.length > 0) {
                 this.setState({
                     unRead: true,
-                })
+                });
             } else {
                 this.setState({
                     unRead: false,

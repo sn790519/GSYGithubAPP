@@ -38,12 +38,14 @@ export default class WebPage extends Component {
     }
 
     componentDidMount() {
-        this.handle = BackHandler.addEventListener('hardwareBackPress', this.back)
+        this.handle = BackHandler.addEventListener('hardwareBackPress-WebPage', this.back)
 
     }
 
     componentWillUnmount() {
-        BackHandler.removeEventListener('hardwareBackPress', this.handle)
+        if (this.handle) {
+            this.handle.remove();
+        }
     }
 
     handleTextInputChange = (event) => {
@@ -131,7 +133,7 @@ export default class WebPage extends Component {
                         defaultValue={this.state.showCurUri}
                         onSubmitEditing={this.onSubmitEditing}
                         onChange={this.handleTextInputChange}
-                        clearButtonMode="while-editing"
+                        clearButtonMode="always"
                         underlineColorAndroid="transparent"
                         style={[styles.smallText, {
                             padding: 0,
@@ -158,6 +160,7 @@ export default class WebPage extends Component {
                     onNavigationStateChange={this.onNavigationStateChange}
                     javaScriptEnabled={true}
                     domStorageEnabled={true}
+                    scalesPageToFit={true}
                     mixedContentMode={'always'}
                     automaticallyAdjustContentInsets={true}
                     allowUniversalAccessFromFileURLs={true}

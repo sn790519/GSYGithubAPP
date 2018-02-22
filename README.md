@@ -1,6 +1,6 @@
 ![](https://github.com/CarGuo/GSYGithubApp/blob/master/logo.png)
 
-## 一款跨平台的开源Github客户端App，旨在更好的日常管理和维护个人Github，提供更好更方便的驾车体验～～Σ(￣。￣ﾉ)ﾉ。
+## 一款跨平台的开源Github客户端App，提供更丰富的功能，更好体验，旨在更好的日常管理和维护个人Github，提供更好更方便的驾车体验～～Σ(￣。￣ﾉ)ﾉ。
 ```
 基于React Native开发，适配Android与IOS。
 
@@ -10,6 +10,12 @@
 
 随着项目的使用情况和反馈，将时不时根据更新并完善用户体验与功能优化吗，欢迎提出问题。
 ```
+-----
+
+[![GitHub stars](https://img.shields.io/github/stars/CarGuo/GSYGithubAPP.svg)](https://github.com/CarGuo/GSYGithubAPP/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/CarGuo/GSYGithubAPP.svg)](https://github.com/CarGuo/GSYGithubAPP/network)
+[![GitHub issues](https://img.shields.io/github/issues/CarGuo/GSYGithubAPP.svg)](https://github.com/CarGuo/GSYGithubAPP/issues)
+[![GitHub license](https://img.shields.io/github/license/CarGuo/GSYGithubAPP.svg)](https://github.com/CarGuo/GSYGithubAPP/blob/master/LICENSE)
 
 ### 编译运行流程
 
@@ -45,7 +51,7 @@
 
 ```
 
-目前没有IOS开发者证书（小贵），有谁能提供个不？Σ(￣。￣ﾉ)ﾉ
+已有ipa，不过不是企业ipa，需要udid，所以目前ios自用╮(╯▽╰)╭
 
 ```
 
